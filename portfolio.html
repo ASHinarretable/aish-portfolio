@@ -67,10 +67,7 @@ section { padding: 7rem 4rem; }
 .about-visual { position: relative; display: flex; align-items: center; justify-content: center; }
 
 /* Graduation photo slot */
-.grad-photo-wrap {
-  width: 100%; aspect-ratio: 3/4; border: 1px solid var(--border); border-radius: 4px;
-  background: var(--surface2); overflow: hidden; position: relative;
-}
+.slider-wrap { width: 100%; aspect-ratio: 4/5; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; position: relative; background: var(--surface2); }
 .grad-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .grad-photo-placeholder {
   width: 100%; height: 100%; display: flex; flex-direction: column;
@@ -86,6 +83,18 @@ section { padding: 7rem 4rem; }
 }
 .grad-badge-name { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
 .grad-badge-detail { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.05em; }
+.slider-track { display: flex; width: 300%; height: 100%; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+.slide { width: 33.333%; height: 100%; flex-shrink: 0; }
+.slide img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.slider-dots { position: absolute; bottom: 5.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.5rem; z-index: 2; }
+.slider-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.25); cursor: pointer; transition: background 0.2s, transform 0.2s; }
+.slider-dot.active { background: var(--accent); transform: scale(1.3); }
+.slider-arrows { position: absolute; bottom: 5.3rem; display: flex; gap: 0.4rem; z-index: 2; }
+.slider-arrow { width: 28px; height: 28px; border: 1px solid var(--border); background: rgba(10,10,10,0.7); color: var(--muted); border-radius: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; }
+.slider-arrow:hover { border-color: var(--accent); color: var(--accent); }
+.skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+.skill-tag { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.45rem 0.9rem; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); letter-spacing: 0.04em; transition: all 0.2s; cursor: default; }
+.skill-tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(184,255,87,0.04); }
 
 /* Experience */
 #experience { background: var(--bg); }
@@ -146,7 +155,7 @@ section { padding: 7rem 4rem; }
 .beyond-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5px; margin-bottom: 1.5px; }
 .beyond-card {
   background: var(--surface2); padding: 2rem 1.75rem;
-  position: relative; overflow: hidden; transition: background 0.3s;
+  position: relative;overflow: hidden; transition: background 0.3s;
 }
 .beyond-card:hover { background: #161616; }
 .beyond-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(87,255,212,0.05), transparent 60%); opacity: 0; transition: opacity 0.3s; }
@@ -158,8 +167,8 @@ section { padding: 7rem 4rem; }
 /* Wide card spans 2 cols */
 .beyond-card.wide { grid-column: span 2; }
 /* Media slot in beyond card */
-.beyond-media { width: 100%; aspect-ratio: 16/7; background: var(--bg); border-radius: 2px; margin-bottom: 1.25rem; overflow: hidden; border: 1px solid var(--border); }
-.beyond-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.beyond-media { width: 100%; aspect-ratio: 16/9; background: var(--bg); border-radius: 2px; margin-bottom: 1.25rem; border: 1px solid var(--border); overflow: hidden; }
+.beyond-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; border-radius: 2px; }
 .beyond-media-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.6rem; color: var(--border); letter-spacing: 0.1em; text-transform: uppercase; }
 
 /* Contact */
@@ -197,6 +206,7 @@ section { padding: 7rem 4rem; }
     <li><a href="#skills">Skills</a></li>
     <li><a href="#beyond">Beyond Code</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="Aishwarya_P_Resume.pdf" download style="color:var(--accent);border:1px solid var(--accent);padding:0.3rem 0.9rem;border-radius:2px;">↓ Resume</a></li>
   </ul>
 </nav>
 
@@ -210,6 +220,7 @@ section { padding: 7rem 4rem; }
   <div class="hero-ctas">
     <a href="#projects" class="btn btn-primary">View Work</a>
     <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    <a href="Aishwarya_Pawar_Resume.pdf" download class="btn btn-outline">↓ Resume</a>
   </div>
 </section>
 
@@ -229,17 +240,33 @@ section { padding: 7rem 4rem; }
       </div>
     </div>
     <div class="about-visual reveal">
-      <!-- GRADUATION PHOTO: Replace the placeholder div below with:
-           <img src="your-graduation-photo.jpg" alt="Aishwarya Pawar graduation" />
-           inside the .grad-photo-wrap div -->
-      <div class="grad-photo-wrap">
-        <div class="grad-photo-placeholder">
-          <div class="initials">AP</div>
-          <div class="placeholder-label">Add your graduation photo here<br/>Replace this div with an &lt;img&gt; tag</div>
+      <div class="slider-wrap">
+        <div class="slider-track" id="sliderTrack">
+          <!-- SLIDE 1: Replace slide-placeholder with <img src="photo1.jpg" alt="..."> -->
+          <div class="slide">
+            <img src="portfolio_me1.jpg" />
+          </div>
+          <!-- SLIDE 2 -->
+          <div class="slide">
+            <img src="portfolio_me2.jpg" />
+          </div>
+          <!-- SLIDE 3 -->
+          <div class="slide">
+            <img src="portfolio_me3.jpg" />
+          </div>
         </div>
         <div class="grad-badge">
           <div class="grad-badge-name">Aishwarya Pawar</div>
           <div class="grad-badge-detail">B.Tech · MKSSS Cummins College · 2025</div>
+        </div>
+        <div class="slider-dots">
+          <div class="slider-dot active" onclick="goToSlide(0)"></div>
+          <div class="slider-dot" onclick="goToSlide(1)"></div>
+          <div class="slider-dot" onclick="goToSlide(2)"></div>
+        </div>
+        <div class="slider-arrows" style="right:1.5rem">
+          <div class="slider-arrow" onclick="prevSlide()">←</div>
+          <div class="slider-arrow" onclick="nextSlide()">→</div>
         </div>
       </div>
     </div>
@@ -307,7 +334,7 @@ section { padding: 7rem 4rem; }
 
     <div class="project-card">
       <!-- MEDIA SLOT: Replace placeholder with <img src="..."> or <video autoplay muted loop src="..."> -->
-      <div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div>
+      <!--div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div -->
       <div class="project-num">01 / Computer Vision</div>
       <div class="project-metric">CV</div>
       <div class="project-name">Visual Alchemy</div>
@@ -320,7 +347,7 @@ section { padding: 7rem 4rem; }
     </div>
 
     <div class="project-card">
-      <div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div>
+      <!--div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div-->
       <div class="project-num">02 / Mobile · Health</div>
       <div class="project-metric">💧</div>
       <div class="project-name">Water Reminder</div>
@@ -330,11 +357,11 @@ section { padding: 7rem 4rem; }
         <span class="project-tag">Push Notifications</span><span class="project-tag">Node.js</span>
       </div>
       <!-- Add GitHub link here once available -->
-      <a href="#" class="project-link">GitHub →</a>
+      <a href="https://github.com/ASHinarretable/AquaRing" class="project-link">GitHub →</a>
     </div>
 
     <div class="project-card">
-      <div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div>
+      <!--div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div-->
       <div class="project-num">03 / Web · Svelte</div>
       <div class="project-metric">⚡</div>
       <div class="project-name">Image Extractor</div>
@@ -344,11 +371,11 @@ section { padding: 7rem 4rem; }
         <span class="project-tag">IEEE Internship</span>
       </div>
       <!-- Add GitHub link here -->
-      <a href="#" class="project-link">GitHub →</a>
+      <a href="https://github.com/ASHinarretable/Devstar_img.extractor" class="project-link">GitHub →</a>
     </div>
 
     <div class="project-card">
-      <div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div>
+      <!--div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div-->
       <div class="project-num">04 / NLP + LLM</div>
       <div class="project-metric">89%</div>
       <div class="project-name">Resume Analyzer</div>
@@ -357,11 +384,11 @@ section { padding: 7rem 4rem; }
         <span class="project-tag">LangChain</span><span class="project-tag">spaCy</span>
         <span class="project-tag">FastAPI</span><span class="project-tag">React</span>
       </div>
-      <a href="#" class="project-link">GitHub →</a>
+      <a href="https://github.com/ASHinarretable/JobFit" class="project-link">GitHub →</a>
     </div>
 
     <div class="project-card">
-      <div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div>
+      <!--div class="project-media"><div class="project-media-placeholder">Add screenshot / demo</div></div-->
       <div class="project-num">05 / DSA · Java</div>
       <div class="project-metric">🥇</div>
       <div class="project-name">Multi-Bank Management</div>
@@ -370,14 +397,19 @@ section { padding: 7rem 4rem; }
         <span class="project-tag">Java</span><span class="project-tag">Data Structures</span>
         <span class="project-tag">O(log n)</span><span class="project-tag">Competition</span>
       </div>
-      <a href="#" class="project-link">GitHub →</a>
+      <a href="https://github.com/ASHinarretable/Buffer" class="project-link">GitHub →</a>
     </div>
 
-    <!-- EMPTY SLOT: Duplicate this card to add more projects -->
-    <div class="project-card" style="border: 1px dashed var(--border); background: transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px;">
-      <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--border);letter-spacing:0.1em;text-align:center;text-transform:uppercase;line-height:2">
-        + Add project<br/>Duplicate any card above
+    <div class="project-card">
+      <div class="project-num">06 / Fashion · Web</div>
+      <div class="project-metric">♻️</div>
+      <div class="project-name">Denigen — Denim Reimagined</div>
+      <p class="project-desc">Web platform for a sustainable denim upcycling venture — showcasing reimagined fashion pieces made from repurposed jeans. Bridges entrepreneurship, sustainability, and design.</p>
+      <div class="project-tags">
+        <span class="project-tag">Sustainability</span><span class="project-tag">Fashion Tech</span>
+        <span class="project-tag">Web</span><span class="project-tag">Upcycling</span>
       </div>
+      <a href="https://github.com/ASHinarretable/denigen-denim-reimagined" target="_blank" class="project-link">GitHub →</a>
     </div>
 
   </div>
@@ -391,18 +423,33 @@ section { padding: 7rem 4rem; }
     <div class="reveal">
       <div class="skills-group">
         <div class="skills-group-title">AI &amp; Data</div>
-        <div class="skill-row"><span class="skill-name">LangChain / RAG</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.92"></div></div><span class="skill-level">92</span></div>
-        <div class="skill-row"><span class="skill-name">Python / NLP</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.90"></div></div><span class="skill-level">90</span></div>
-        <div class="skill-row"><span class="skill-name">FastAPI</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.85"></div></div><span class="skill-level">85</span></div>
-        <div class="skill-row"><span class="skill-name">Pinecone / SQL</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.80"></div></div><span class="skill-level">80</span></div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span><span class="skill-tag">LangChain</span>
+          <span class="skill-tag">RAG</span><span class="skill-tag">NLP</span>
+          <span class="skill-tag">LLMs</span><span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Pinecone</span><span class="skill-tag">SQL</span>
+          <span class="skill-tag">Snowflake</span><span class="skill-tag">OpenAI API</span>
+          <span class="skill-tag">spaCy</span>
+        </div>
       </div>
       <div class="skills-group">
         <div class="skills-group-title">Full Stack &amp; Mobile</div>
-        <div class="skill-row"><span class="skill-name">Angular</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.88"></div></div><span class="skill-level">88</span></div>
-        <div class="skill-row"><span class="skill-name">Node.js / Express</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.82"></div></div><span class="skill-level">82</span></div>
-        <div class="skill-row"><span class="skill-name">React / React Native</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.78"></div></div><span class="skill-level">78</span></div>
-        <div class="skill-row"><span class="skill-name">Svelte</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.65"></div></div><span class="skill-level">65</span></div>
-        <div class="skill-row"><span class="skill-name">Playwright / Pytest</span><div class="skill-bar-wrap"><div class="skill-bar" data-level="0.88"></div></div><span class="skill-level">88</span></div>
+        <div class="skill-tags">
+          <span class="skill-tag">Angular</span><span class="skill-tag">React</span>
+          <span class="skill-tag">React Native</span><span class="skill-tag">Svelte</span>
+          <span class="skill-tag">Node.js</span><span class="skill-tag">Express.js</span>
+          <span class="skill-tag">REST APIs</span><span class="skill-tag">HTML / CSS</span>
+          <span class="skill-tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="skills-group">
+        <div class="skills-group-title">Testing &amp; DevOps</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Playwright</span><span class="skill-tag">Pytest</span>
+          <span class="skill-tag">Docker</span><span class="skill-tag">Git</span>
+          <span class="skill-tag">GitLab CI/CD</span><span class="skill-tag">Azure</span>
+          <span class="skill-tag">Jenkins</span>
+        </div>
       </div>
     </div>
     <div class="reveal">
@@ -411,27 +458,27 @@ section { padding: 7rem 4rem; }
         <div class="cert-card featured">
           <div class="cert-name">AWS ML – Specialty</div>
           <div class="cert-org">Amazon Web Services</div>
-          <a href="#" class="cert-badge">View Badge ↗</a>
+          <a href="https://www.credly.com/badges/a9bb3369-2740-4ec3-b9ad-c97a7550d518/public_url" class="cert-badge">View Badge ↗</a>
         </div>
         <div class="cert-card">
           <div class="cert-name">AWS ML – Associate</div>
           <div class="cert-org">Amazon Web Services</div>
-          <a href="#" class="cert-badge">View Badge ↗</a>
+          <a href="https://www.credly.com/badges/3a781809-2f3b-49a0-bf76-8e70b5c67be4/public_url" class="cert-badge">View Badge ↗</a>
         </div>
         <div class="cert-card">
           <div class="cert-name">AWS Developer – Associate</div>
           <div class="cert-org">Amazon Web Services</div>
-          <a href="#" class="cert-badge">View Badge ↗</a>
+          <a href="https://www.credly.com/badges/314935b3-9302-47a9-975c-d4687c08b604/public_url" class="cert-badge">View Badge ↗</a>
         </div>
         <div class="cert-card">
           <div class="cert-name">GitLab CI/CD Associate</div>
           <div class="cert-org">GitLab</div>
-          <a href="#" class="cert-badge">View Badge ↗</a>
+          <a href="https://www.credly.com/badges/ad5a38a3-f263-4665-b25a-929daf9571ac/public_url" class="cert-badge">View Badge ↗</a>
         </div>
         <div class="cert-card" style="grid-column:1/-1">
           <div class="cert-name">PCAP – Certified Associate in Python</div>
           <div class="cert-org">Python Institute</div>
-          <a href="#" class="cert-badge">View Badge ↗</a>
+          <a href="https://www.credly.com/badges/dfdd22f6-b848-47de-b6a7-3ebda32a507e/public_url" class="cert-badge">View Badge ↗</a>
         </div>
       </div>
     </div>
@@ -447,7 +494,9 @@ section { padding: 7rem 4rem; }
 
     <div class="beyond-card wide">
       <!-- MEDIA SLOT: Add AR/VR club photo here -->
-      <div class="beyond-media"><div class="beyond-media-placeholder">Add AR/VR club photo</div></div>
+      <div class="beyond-media">
+        <img src="avatri_portfolio.JPG" />
+      </div>
       <div class="beyond-icon">🥽</div>
       <div class="beyond-title">AR/VR Club — PR Head → Event Head</div>
       <div class="beyond-desc">Started as PR Head for the college AR/VR club, growing the community's presence and outreach. Later stepped up to Event Head, planning and running technical events and immersive experience showcases.</div>
@@ -478,7 +527,9 @@ section { padding: 7rem 4rem; }
 
     <div class="beyond-card">
       <!-- MEDIA SLOT: Add dance/drama/fashion show photo -->
-      <div class="beyond-media"><div class="beyond-media-placeholder">Add performance photo</div></div>
+      <div class="beyond-media">
+        <img src="dance_portfolio.JPG" />
+      </div> 
       <div class="beyond-icon">💃</div>
       <div class="beyond-title">Dance, Drama &amp; Fashion Show</div>
       <div class="beyond-desc">Active participant in college cultural events — performed in dance, drama productions, and fashion show. Engineers contain multitudes.</div>
@@ -495,7 +546,9 @@ section { padding: 7rem 4rem; }
 
     <div class="beyond-card wide">
       <!-- MEDIA SLOT: Add graduation photo here too, or any college life photo -->
-      <div class="beyond-media"><div class="beyond-media-placeholder">Add college / graduation photo</div></div>
+      <div class="beyond-media">
+        <img src="graduation_portfolio.JPG" />
+      </div>
       <div class="beyond-icon">🎓</div>
       <div class="beyond-title">MKSSS Cummins College of Engineering</div>
       <div class="beyond-desc">Four years of building, breaking, and occasionally fixing things. B.Tech graduate, 2025. Cummins taught me to ship things that work and ask better questions.</div>
@@ -512,7 +565,7 @@ section { padding: 7rem 4rem; }
   <h2 class="contact-big reveal">Let's build<br/>something <span>real.</span></h2>
   <p class="contact-sub reveal">Open to AI/ML and full-stack engineering roles. Always up for interesting problems.</p>
   <div class="contact-links reveal">
-    <a href="mailto:aishwaryapawar@gmail.com" class="contact-link">Email</a>
+    <a href="mailto:aishwaryapawar3082002@gmail.com" class="contact-link">Email</a>
     <a href="https://www.linkedin.com/in/aishwarya-pawar-7057aish2002" target="_blank" class="contact-link">LinkedIn</a>
     <a href="https://github.com/ASHinarretable" target="_blank" class="contact-link">GitHub</a>
   </div>
@@ -542,6 +595,17 @@ const observer=new IntersectionObserver((entries)=>{
   });
 },{threshold:0.12});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+let currentSlide = 0;
+const track = document.getElementById('sliderTrack');
+const dots = document.querySelectorAll('.slider-dot');
+function goToSlide(n) {
+  currentSlide = n;
+  track.style.transform = `translateX(-${n * 33.333}%)`;
+  dots.forEach((d,i) => d.classList.toggle('active', i === n));
+}
+function nextSlide() { goToSlide((currentSlide + 1) % 3); }
+function prevSlide() { goToSlide((currentSlide + 2) % 3); }
+setInterval(nextSlide, 4000);
 </script>
 </body>
 </html>
